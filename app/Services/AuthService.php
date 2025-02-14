@@ -14,7 +14,7 @@ class AuthService
        
 
         if (!validate_password($data['password'])) {
-            return message([],'Password must be 8-10 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',422);
+            return message([],'Password must be 6 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',422);
         }
 
         if (User::where('email', $data['email'])->exists()) {

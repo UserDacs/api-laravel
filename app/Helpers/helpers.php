@@ -5,7 +5,7 @@ use Illuminate\Validation\ValidationException;
 if (!function_exists('validate_password')) {
     function validate_password(string $password): bool
     {
-        return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/', $password);
+        return preg_match('/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/', $password);
     }
 }
 
