@@ -23,6 +23,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'password' => 'required|min:6',
+            'role' => 'nullable',
         ]);
 
         $user = $this->authService->register($validatedData);
@@ -55,4 +56,18 @@ class AuthController extends Controller
         }
         return message([], 'Unauthorized', 401);
     }
+
+    public function mobileAuth(Request $request)
+    {
+        $validatedData = $request->validate([
+
+            'user_id' => 'required',
+            'mobile_auth' => 'required',
+            
+        ]);
+
+        return $this->authService->mobileAuth($validatedData);
+    }
+
+    
 }

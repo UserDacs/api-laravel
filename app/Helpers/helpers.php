@@ -17,6 +17,6 @@ if (!function_exists('message')) {
             'status' => $status,
             'message' => $message,
             'data' => $data,
-        ], $status);
+        ]);
     }
 }
