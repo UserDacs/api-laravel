@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('address_city')->nullable();
             $table->string('address_state')->nullable();
             $table->string('address_zip_code')->nullable();
-            $table->text('image_path')->default('/images/no-image-1.png');
+            $table->text('image_path')->nullable();
             $table->enum('mobile_auth', ['authenticated', 'unauthenticated'])->default('unauthenticated');
         });
     }
