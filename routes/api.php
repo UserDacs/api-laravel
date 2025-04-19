@@ -12,6 +12,8 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ServiceV2Controller;
+
+use App\Http\Controllers\ShopController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -72,6 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/update-profile', [UserController::class, 'updateProfile']);
 
+    Route::post('/update-account', [UserController::class, 'apiUpdatePrifile']);
+
+
 
     Route::post('/get-service-list', [ServiceV2Controller::class, 'getServiceApi']);
 
@@ -93,6 +98,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/v2/bookings-show', [BookingController::class, 'apiBookingList']);
 
-    // storeApi
+    Route::post('/v2/change-password', [App\Http\Controllers\UserController::class, 'changePassword']);
+
+    Route::get('/v2/shop-list', [ShopController::class, 'apiShopList']);
+
+    Route::post('/v2/shop-create', [ShopController::class, 'updateShop']);
+
+    Route::get('/v2/shop-check', [ShopController::class, 'apiShopuser']);
+
+
+
+    // apiShopList
+    // storeApi updateImage
+
+    // Route::post('/update-profile', [UserController::class, 'updateProfile']);
 
 });

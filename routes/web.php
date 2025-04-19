@@ -82,6 +82,8 @@ Route::middleware(['admin'])->group(function () {
 });
 
 
+
+
 Route::get('/rate', function () {
     return view('sample_rate.rate');
 });

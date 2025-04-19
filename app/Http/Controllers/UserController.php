@@ -183,6 +183,7 @@ class UserController extends Controller
 
         if (!Hash::check($request->old_password, $user->password)) {
             return response()->json([
+                'message' => 'Old password is incorrect.',
                 'errors' => ['old_password' => ['Old password is incorrect.']]
             ], 422);
         }
@@ -273,4 +274,56 @@ class UserController extends Controller
             'message' => 'User registered successfully.'
         ], 201);
     }
+
+    public function updateImage(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'image_path' => 'nullable|file|mimes:jpeg,jpg,png|max:2048',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($request->hasFile('image_path')) {
+            $image = $request->file('image_path');
+            $path = $image->store('profile_images', 'public');
+            $user->image_path = '/storage/' . $path;
+        }
+
+        $user->save();
+
+        return response()->json($user);
+    }
+
+
+    public function apiUpdatePrifile(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $user = User::findOrFail($user_id);
+
+        $validated = $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'email'     => 'required',
+            'phone'             => 'nullable|string',
+            'address_street'    => 'nullable|string',
+            'address_city'      => 'nullable|string',
+            'address_state'     => 'nullable|string',
+            'address_zip_code'  => 'nullable|string',
+        ]);
+
+
+        $validated['name'] = $validated['firstname'] .' '.$validated['lastname'];
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json($user);
+    }
+
 }

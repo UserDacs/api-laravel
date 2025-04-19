@@ -148,7 +148,7 @@
         const chatBody = document.querySelector('.widget-chat-body');
 
 
-        const socket = io("http://13.210.217.37:3000");
+        const socket = io("http://192.168.1.104:3000");
 
         let typingTimeout;
         let isTyping = false;
