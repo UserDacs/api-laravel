@@ -154,7 +154,7 @@ class ServiceController extends Controller
         ])
         ->orderBy('created_at', 'desc') // Sort by newest first
         ->get();
-    
+
         return response()->json($services);
     }
 
@@ -183,4 +183,7 @@ class ServiceController extends Controller
         ]);
     }
 
+	public function index() {
+		return view('admin.services');
+	}
 }

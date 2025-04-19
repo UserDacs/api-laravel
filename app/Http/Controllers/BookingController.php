@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use Illuminate\Support\Facades\DB;
+
 
 class BookingController extends Controller
 {
@@ -44,21 +46,83 @@ class BookingController extends Controller
 
     public function cancel(Request $request) {
         $booking = Booking::findOrFail($request->input('booking_id'));
-    
+
         if ($booking->status === 'cancel') {
             return response()->json(['message' => 'Booking is already canceled'], 400);
         }
-    
+
         $booking->status = 'cancel';
         $booking->save();
-    
+
         $cancel = $booking->cancel()->create([
             'reason' => $request->input('reason')
         ]);
-    
+
         return response()->json([
             'message' => 'Booking canceled successfully',
             'cancel' => $cancel
         ]);
+    }
+	public function index2() {
+
+        $bookings = DB::table('booking_details_v2')->get();
+		return view('admin.bookings',compact('bookings'));
+	}
+
+
+    public function storeApi(Request $request)
+    {
+        $validated = $request->validate([
+            'service_id' => 'required|exists:service_v2_s,id',
+            'customer_id' => 'required|exists:users,id',
+            'booking_date' => 'nullable|date',
+            'booking_address' => 'required|string|max:255',
+            'booking_duration' => 'nullable|string|max:255',
+            'booking_lat' => 'nullable|numeric',
+            'booking_long' => 'nullable|numeric',
+            'booking_status' => 'required|in:pending,cancel,done',
+            'payment_method' => 'required|in:cash,card,online',
+        ]);
+
+        // ✅ Check kung meron nang pending booking with same service_id & customer_id
+        $existingBooking = DB::table('booking_v2_s')
+            ->where('service_id', $validated['service_id'])
+            ->where('customer_id', $validated['customer_id'])
+            ->where('booking_status', 'pending')
+            ->first();
+
+        if ($existingBooking) {
+            return response()->json([
+                'message' => 'You already have a pending booking for this service.'
+            ], 409); // Conflict
+        }
+
+        // ✅ Proceed with insert
+        DB::table('booking_v2_s')->insert([
+            'service_id'       => $validated['service_id'],
+            'customer_id'      => $validated['customer_id'],
+            'booking_date'     => $validated['booking_date'],
+            'booking_address'  => $validated['booking_address'],
+            'booking_duration' => $validated['booking_duration'],
+            'booking_lat'      => $validated['booking_lat'],
+            'booking_long'     => $validated['booking_long'],
+            'booking_status'   => $validated['booking_status'],
+            'payment_method'   => $validated['payment_method'],
+            'created_at'       => now(),
+            'updated_at'       => now(),
+        ]);
+
+        return response()->json(['message' => 'Booking inserted successfully.']);
+    }
+
+    public function apiBookingList() {
+        $customer_id = $_GET['customer_id'] ?? null;
+        if ($customer_id) {
+            $services = DB::table('booking_details_v2')->where('customer_id','=',$customer_id)->get();
+        } else {
+            $services = DB::table('booking_details_v2')->get();
+        }
+
+        return response()->json($services);
     }
 }

@@ -42,4 +42,5 @@ class ProductController extends Controller
         $this->productService->delete($product);
         return response()->json(['message' => 'Product deleted successfully']);
     }
+
 }
