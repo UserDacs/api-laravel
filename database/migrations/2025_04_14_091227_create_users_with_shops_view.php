@@ -35,8 +35,12 @@ return new class extends Migration
                 shops.shop_name,
                 shops.shop_address,
                 shops.shop_details,
+                shops.status AS shop_status,
                 shops.shop_lat,
                 shops.shop_long,
+                shops.shop_image,
+                shops.shop_national_id,
+                shops.cor,
                 shops.created_at AS shop_created_at,
                 shops.updated_at AS shop_updated_at
             FROM

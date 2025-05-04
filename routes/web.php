@@ -64,7 +64,9 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin-shop-store', [App\Http\Controllers\ShopController::class, 'store'])->name('admin-shop-store');
     Route::get('/admin-shop-edit/{id}', [App\Http\Controllers\ShopController::class, 'edit'])->name('admin-shop-edit');
     Route::put('/admin-shop-update/{id}', [App\Http\Controllers\ShopController::class, 'update'])->name('admin-shop-update');
+    Route::get('/admin-shop-view/{shop_id}', [App\Http\Controllers\ShopController::class, 'show']);
 
+    Route::post('/shops/{id}/toggle-status', [App\Http\Controllers\ShopController::class, 'toggleStatus'])->name('shops.toggleStatus');
 
         // Service
         Route::get('/admin-service-create', [App\Http\Controllers\ServiceV2Controller::class, 'create'])->name('admin-service-create');
@@ -79,9 +81,13 @@ Route::middleware(['admin'])->group(function () {
 
         Route::post('/change-password', [App\Http\Controllers\UserController::class, 'changePassword'])->name('change.password');
         Route::post('/update-field', [App\Http\Controllers\UserController::class, 'updateField'])->name('update.field');
+
+
 });
 
 
+
+Route::post('/notify', [App\Http\Controllers\UserController::class, 'notifyUser']);
 
 
 Route::get('/rate', function () {
@@ -118,3 +124,5 @@ Route::get('/web/message/conversation/{userId}', [MessageController::class, 'con
 Route::patch('/web/message/read/{id}', [MessageController::class, 'markAsReadWeb']);
 
 Route::get('/api/search-users', [App\Http\Controllers\UserController::class, 'searchUsers']);
+
+Route::post('/api/booking/update-status', [App\Http\Controllers\BookingController::class, 'updateStatus']);

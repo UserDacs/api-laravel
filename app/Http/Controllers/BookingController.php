@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\GeneralNotification;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+
 
 
 class BookingController extends Controller
@@ -97,6 +102,19 @@ class BookingController extends Controller
             ], 409); // Conflict
         }
 
+        $usr_id = DB::table('view_booking_user_id')
+            ->where('service_id', $validated['service_id'])
+            ->first();
+
+        $user = User::find($usr_id->user_id);
+
+        // Send the notification to the user
+        $user->notify(new GeneralNotification(
+            "New Booking",
+            'Booking',
+            "booking"
+        ));
+
         // ✅ Proceed with insert
         DB::table('booking_v2_s')->insert([
             'service_id'       => $validated['service_id'],
@@ -117,12 +135,57 @@ class BookingController extends Controller
 
     public function apiBookingList() {
         $customer_id = $_GET['customer_id'] ?? null;
-        if ($customer_id) {
-            $services = DB::table('booking_details_v2')->where('customer_id','=',$customer_id)->get();
-        } else {
-            $services = DB::table('booking_details_v2')->get();
+
+        Log::info($customer_id);
+
+        $user = User::find($customer_id);
+
+        Log::info($user);
+        // shop_user_id
+
+        $services = [];
+      
+        if ($user) {
+           if ($user->role === 'provider') {
+             $services = DB::table('booking_details_v2')->where('shop_user_id','=',$user->id)->get();
+           }else{
+             $services = DB::table('booking_details_v2')->where('customer_id','=',$user->id)->get();
+           }
         }
 
+        // if ($customer_id) {
+        //     $services = DB::table('booking_details_v2')->where('customer_id','=',$customer_id)->get();
+        // } else {
+        //     $services = DB::table('booking_details_v2')->get();
+        // }
+
         return response()->json($services);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:booking_v2_s,id',
+            'status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        DB::table('booking_v2_s')
+            ->where('id', $request->id)
+            ->update([
+                'booking_status' => $request->status,
+                'updated_at' => now()
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking status updated successfully.'
+        ]);
     }
 }

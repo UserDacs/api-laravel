@@ -19,7 +19,7 @@
 							<div class="menu-icon">
 								<i class="material-icons">event</i>
                             </div>
-							<div class="menu-text">Bookings <span class="badge" style="background: #f45 !important">5</span></div>
+							<div class="menu-text">Bookings <span id="count-booking"></span></div>
 						</a>
 					</div>
 
@@ -37,7 +37,7 @@
 							<div class="menu-icon">
 								<i class="material-icons">local_mall</i>
                             </div>
-							<div class="menu-text">Shop</div>
+							<div class="menu-text">Shop <span id="count-shop"></div>
 						</a>
 					</div>
 
@@ -83,7 +83,7 @@
 							<div class="menu-icon">
 								<i class="material-icons">headset_mic</i>
                             </div>
-							<div class="menu-text">Customer Service <span class="badge" style="background: #f45 !important">5</span></div>
+							<div class="menu-text">Customer Service <span id="count-message"></span></div>
 						</a>
 					</div>
 

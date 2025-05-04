@@ -14,6 +14,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ServiceV2Controller;
 
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -113,4 +114,35 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Route::post('/update-profile', [UserController::class, 'updateProfile']);
 
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Get all notifications for the authenticated user
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    
+    // Get unread notification counts by category for the authenticated user
+
+    
+    // Mark a notification as read
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    
+    // Send a custom notification (could be used for testing or admin usage)
+    Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
+});
+
+Route::get('/notifications/counts', [NotificationController::class, 'counts']);
+
+Route::get('/notifications/list', [NotificationController::class, 'list']);
+
+
+Route::post('/notifications/mark-as-read', function (Request $request) {
+    $notif = \DB::table('notifications')->where('id', $request->id)->first();
+
+    if ($notif && is_null($notif->read_at)) {
+        \DB::table('notifications')->where('id', $request->id)->update([
+            'read_at' => now()
+        ]);
+    }
+
+    return response()->json(['success' => true]);
 });

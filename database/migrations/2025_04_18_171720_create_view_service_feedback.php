@@ -125,6 +125,7 @@ return new class extends Migration
                 -- Customer Info
                 c.id AS customer_id,
                 c.name AS fullname,
+                c.image_path AS customer_image,
                 c.firstname AS customer_firstname,
                 c.lastname AS customer_lastname,
                 c.email AS customer_email,
@@ -151,6 +152,9 @@ return new class extends Migration
 
                 -- Shop Info
                 shop.id AS shop_id,
+                shop.user_id AS shop_user_id,
+                (SELECT CONCAT(firstname,' ',lastname) FROM users where id = shop.user_id) AS shop_user_fullname,
+                (SELECT image_path FROM users where id = shop.user_id) AS shop_user_image_path,
                 shop.shop_name,
                 shop.shop_address,
                 shop.shop_lat,

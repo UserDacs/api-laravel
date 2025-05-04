@@ -141,21 +141,16 @@
         </div>
     </div> --}}
 
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
 
     {{-- Socket --}}
     <script>
         const chatBody = document.querySelector('.widget-chat-body');
 
-
-        const socket = io("http://192.168.1.104:3000");
-
         let typingTimeout;
         let isTyping = false;
 
-        socket.on("connect", () => {
-            console.log("✅ Connected to server:", socket.id);
-        });
+        
 
         socket.on("receive-message", (data) => {
             console.log("📥 Received message from server:", data);

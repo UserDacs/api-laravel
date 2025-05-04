@@ -3,6 +3,7 @@
 
     </div>
     <div class="col-md-6">
+        @if (!$shop)
         <div class="mb-3">
             <label for="user_id">Select Owner</label>
             <select name="user_id" id="user_id" class="form-control">
@@ -15,6 +16,7 @@
             </select>
 
         </div>
+        @endif
         <div class="mb-3">
             <label for="shop_name">Shop name</label>
             <input type="text" name="shop_name" class="form-control"

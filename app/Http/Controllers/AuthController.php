@@ -137,9 +137,12 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'status' => 'success',
             'message' => 'Login successful.',
+            'token' => $token, 
             'redirect' => route('admin.dashboard')
         ]);
     }

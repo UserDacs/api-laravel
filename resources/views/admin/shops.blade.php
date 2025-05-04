@@ -33,6 +33,7 @@
                         <th class="text-nowrap">Shop name</th>
                         <th class="text-nowrap">Owner</th>
                         <th class="text-nowrap">Created Date</th>
+                        <th class="text-nowrap">Status</th>
                         <th class="text-nowrap" data-orderable="false" ></th>
 
                     </tr>
@@ -44,10 +45,15 @@
                         <td>{{$shop->shop_name}}</td>
                         <td>{{$shop->name}}</td>
                         <td>{{ date('F j, Y g:i A', strtotime($shop->shop_created_at)) }}</td>
+                        <td>{{$shop->shop_status}}</td>
                         <td class="text-center">
+                            <a href="/admin-shop-view/{{$shop->shop_id}}" class="btn btn-primary btn-icon btn-circle btn-sm">
+                                <i class="fa fa-file"></i>
+                            </a>
                             <a href="{{ route('admin-shop-edit', $shop->shop_id) }}" class="btn btn-warning btn-icon btn-circle btn-sm">
                                 <i class="fa fa-pencil"></i>
                             </a>
+                            
                             <a href="javascript:;" class="btn btn-danger btn-icon btn-circle btn-sm">
                                 <i class="fa fa-trash"></i>
                             </a>

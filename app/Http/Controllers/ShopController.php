@@ -8,12 +8,13 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Models\ViewUserWithShop;
 
 class ShopController extends Controller
 {
     //
 	public function index() {
-        $shops = DB::table('view_users_with_shops')->where('role','provider')->get();
+        $shops = DB::table('view_users_with_shops')->get();
 		return view('admin.shops',compact('shops'));
 	}
 
@@ -52,7 +53,7 @@ class ShopController extends Controller
         $user = Shop::findOrFail($id);
 
         $validated = $request->validate([
-            'user_id' => 'required',
+            // 'user_id' => 'required',
             'shop_name'  => 'required',
             'shop_address'  => 'required',
             'shop_details'  => 'required',
@@ -131,6 +132,48 @@ class ShopController extends Controller
         }
 
         return response()->json($services);
+    }
+
+    public function show($shop_id)
+    {
+        $shop = ViewUserWithShop::where('shop_id', $shop_id)->first();
+
+        if (!$shop) {
+            abort(404, 'Shop not found');
+        }
+
+        return view('admin.shops.show', compact('shop'));
+    }
+
+    public function toggleStatus($id)
+    {
+        $shop = DB::table('shops')->where('id', $id)->first();
+
+        if (!$shop) {
+            return redirect()->back()->with('error', 'Shop not found.');
+        }
+
+        // Toggle the status between 'pending', 'active', and 'inactive'
+        $newStatus = match ($shop->status) {
+            'pending' => 'active',
+            'active' => 'inactive',
+            'inactive' => 'active',
+            default => $shop->status,
+        };
+
+        // Update the shop's status
+        DB::table('shops')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        
+        $shop = DB::table('shops')->where('id', $id)->first();
+
+        if ($shop) {
+            DB::table('users')->where('id', $shop->user_id)->update([
+                'role' => 'provider'
+            ]);
+        }
+
+        // Redirect back with success message
+        return redirect()->back()->with('success', 'Shop status updated to ' . ucfirst($newStatus));
     }
 
 

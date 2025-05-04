@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Http;
+use App\Models\Notification;
 
 class UserController extends Controller
 {
@@ -78,10 +79,10 @@ class UserController extends Controller
             'address_state'     => 'nullable|string',
             'address_zip_code'  => 'nullable|string',
             'mobile_auth'       => 'nullable|string',
-            'image_path'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_path'        => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
 
-        // Handle image upload
+        // Handle image upload Admin1234!
         if ($request->hasFile('image_path')) {
             $image = $request->file('image_path');
             $path = $image->store('profile_images', 'public'); // Save under storage/app/public/users
@@ -326,4 +327,49 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+
+    public function notifyUser(Request $request)
+    {
+        // $request->validate([
+        //     'userId' => 'required|integer',
+        //     'message' => 'required|string',
+        //     'title' => 'nullable|string',
+        //     'type' => 'nullable|string',
+        //     'url' => 'nullable|url',
+        //     'image_path' => 'nullable|string',
+        // ]);
+    
+        $userId = $request->input('userId');
+        $message = $request->input('message');
+        $title = $request->input('title') ?? 'Notification';
+        $type = $request->input('type') ?? 'message';
+        $url = $request->input('url');
+        $imagePath = $request->input('image_path');
+    
+        // Save to DB
+        $notification = Notification::create([
+            'user_id' => $userId,
+            'title' => $title,
+            'message' => $message,
+            'type' => $type,
+            'status' => 'unread',
+            'url' => $url,
+            'image_path' => $imagePath,
+        ]);
+    
+        // Send to Node.js
+        $response = Http::post('http://192.168.1.100:3000/notify', [
+            'userId' => $userId,
+            'message' => $message,
+            'title' => $title,
+            'url' => $url,
+            'image_path' => $imagePath,
+            'type' => $type,
+        ]);
+    
+        return response()->json([
+            'success' => true,
+            'status' => $response->json(),
+        ]);
+    }
 }
